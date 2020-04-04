@@ -78,8 +78,8 @@ char charcompare(char a, char b)/*算符优先级的比较*/
 	else return'<';
 }
 status LN(char c)/*判断是否是符号*/
-{
-	switch (c)/*运算符返回1数字符返回2非法符返回0*/
+{/*运算符返回1，数字符返回2，非法返回0*/
+	switch (c)
 	{
 	case '*':
 	case'/':
@@ -106,26 +106,29 @@ int compute(int a, char t, int b)/*计算*/
 
 int main()
 {
-	
+	printf("输入以#为结尾的计算式\n");
 	while (1)
 	{
-		int flag = 0;/*定义一个报错变量*/
-		Elemtype n1, n2, temp;/*定义三个临时的工具人变量*/
-		temp.c = 0;/*初始化变量*/		
+		Elemtype n1, n2, temp;/*定义三个临时变量*/
+		temp.c = 0;
+		int flag = 0;
 		n1.num = n2.num = 0;
-		stack charcter, number;/*定义运算符栈和数字栈*/
+		stack charcter, number;
 		intstack(&charcter);/*创建栈*/
 		intstack(&number);
-		Elemtype ch,prech;/*定义一个当前的输入字符，和他的前一个输入字符*/
+		Elemtype ch,prech;/*定义prech防止重复输入运算符*/
 		prech.c = 0;
-		ch.c = '#';/*初始化变量*/
-		push(&charcter, ch);/*第一个虚拟运算符先进栈*/
-		while (LN(ch.c) != 2)/*采集桌面上的字符，第一个数字符前的字符全部无视*/
+		ch.c = '#';
+		push(&charcter, ch);/*将#入栈*/
+		while (LN(ch.c) != 2)
 			ch.c = getchar();
 		while (ch.c != '#' || getstack(&charcter).c != '#')
 		{
+			int sign = 1;/*用来处理负号的机制*/
 			while ((LN(ch.c) == LN(prech.c))|| LN(ch.c)==0)
-			{/*如果输入了非法字符，无视他继续采集，如果连续输入两个运算符只有前面一个有效*/
+			{
+				if (ch.c = '-')/*碰见重复的-当做负号处理，其他输入作为无效处理*/
+					sign *= -1;
 				prech.c = ch.c;
 				ch.c = getchar();
 			}
@@ -137,21 +140,21 @@ int main()
 				{
 					a[i] = ch.c;
 					ch.c = 'a';
-					while (!LN(ch.c))/*无视中间的非法字符*/
-					{
+					while (!LN(ch.c))
+					{/*无视无效字符*/
 						prech.c = ch.c;
 						ch.c = getchar();
 					}
 				}
-				if (i < 9)
+				if (i < 9)/*运算位数合法时入栈*/
 				{
 					a[i] = '\0';
 					Elemtype n;
-					n.num = atoi(a);/*将字符串变成整数*/
+					n.num = sign *= atoi(a);/*将字符串变成整数*/
 					push(&number, n);
 				}
-				else
-					flag = 1;/*字符串太长的话则继续报错处理*/
+				else/*不合法更改标志*/
+					flag = 1;
 			}
 			else if (LN(ch.c)) {
 				switch (charcompare(getstack(&charcter).c, ch.c))
@@ -160,16 +163,16 @@ int main()
 				case'=':pop(&charcter, &n1); prech.c = ch.c;  ch.c = getchar(); break;/*如果等于拖去括号*/
 				case'>':pop(&charcter, &temp); pop(&number, &n2); pop(&number, &n1);/*如果大于则进行计算*/
 					temp.num = compute(n1.num, temp.c, n2.num); push(&number, temp);
-					break;//最后当栈中仅有字符#与当前的ch为#时结束运算		
+					break;
 				}
 			}
-			if (flag)/*报错*/
-			{
+			if (flag)
+			{/*输入数过大时输出报错*/
 				printf("input number is too large.please resume load\n");
 				break;
 			}
-		}
-		if(!flag)/*清空*/
+		}/*当ch.c为#且栈中仅有#时结束运算*/
+		if(!flag)/*没问题时输出运算结果*/
 			printf("%d\n", getstack(&number).num);
 		free(charcter.base);
 		free(number.base);

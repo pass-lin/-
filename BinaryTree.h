@@ -16,7 +16,7 @@ Status InitBiTree(BiTree* T);
 void DestroyBiTree(BiTree T);
 //初始条件：二叉树T存在
 //操作结果：摧毁二叉树T
-BiTNode* CreateBiTree(BiTree T, char* definition, int begin, int end);
+BiTNode* CreateBiTree(BiTree T, char* definition);
 //初始条件： definition给出二叉树的定义
 //操作结果：按definition构造二叉树T
 

@@ -12,13 +12,15 @@ int main()
 	a= visit;
     char s[30];
 	printf("输入例:1+1\n");
+	extern int record;
 	while (1)
 	{
+		record=0;
 		BiTree p;
 		InitBiTree(&p);
 		printf("请输入计算式:");
 		scanf_s("%s", s, 30);
-		CreateBiTree(p, s, 0, strlen(s) - 1);
+		CreateBiTree(p, s);
 		printf("前缀表达式为:\n");
 		PreOrderTraverse(p, a);
 		printf("\n");

@@ -36,37 +36,24 @@ void DestroyBiTree(BiTree T)
 }
 //初始条件：二叉树T存在
 //操作结果：摧毁二叉树T
-BiTNode* CreateBiTree(BiTree T, char* definition,int begin, int end)
+int record;//用于定位当前的字符
+BiTNode* CreateBiTree(BiTree T, char* definition)
 {//通过找到最后运算符来切割树
 	if (definition != NULL)
 	{
-		if (T == NULL)//首先给当前节点赋予空间
+		if (T == NULL)
 			InitBiTree(&T);
-		if (begin==end)
-		{//如果是叶子节点则返回
-			T->data = definition[begin];
+		if (definition[record] >= '0' && definition[record] <= '9')
+		{		//如果是数字则为叶子结点	
+			T->data = definition[record];
 			return T;
 		}
-		/*c1用于寻找+-号位置，c2用于寻找* /号位置，p用来记录是否在括号内（表示括号纵深）*/
-		int c1, c2, p; 
-		c1 = c2 = -1, p = 0; 
-		for (int i = begin; i<=end; i++)
-			switch (definition[i])
-			{
-			case '(':p++; break;//遇到左括号p就加一
-			case ')':p--; break;//右括号减一
-			case '+'://只有不在括号内再定位
-			case'-':if (!p)c1 = i; break;
-			case '*':
-			case '/':if (!p)c2 = i; break;
-			}
-		if (c1 < 0)c1 = c2;/*如果没有+-则* /号顶上*/
-		if (c1 < 0)/*如果* /号也没有则判定在括号内，裂开运算*/ 
-			return CreateBiTree(T, definition, begin + 1, end - 1);
-		T->data = definition[c1]; //给当前结点赋值
-		T->lchild = CreateBiTree(T->lchild, definition, begin, c1 - 1); //最后运算符左边的作为左子树
-		T->rchild= CreateBiTree(T->rchild, definition, c1 + 1, end );//右边作为右子树
-		return T;
+		T->data = definition[record];
+		record++;//其他分别计算左右子树
+		T->lchild = CreateBiTree(T->lchild, definition);
+		record++;
+		T->rchild = CreateBiTree(T->rchild, definition);
+		return	T;
 	}
 	
 	return NULL;
